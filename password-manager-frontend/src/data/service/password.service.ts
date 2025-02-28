@@ -1,31 +1,35 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable } from 'rxjs';
 import { Password } from '../model/Password';
+import {FormGroup} from "@angular/forms";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
+
 export class PasswordService {
-  path = 'http://localhost:8080/password';
+  private baseUrl = 'http://localhost:8080/password';
 
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<Password[]> {
-    return this.http.get(this.path) as Observable<Password[]>;
-  }
-  addPassword(password: Password): Observable<Password> {
-    return this.http.post(this.path, password) as Observable<Password>;
-  }
-  deletePassword(id: Number): Observable<void> {
-    return this.http.delete<void>(`${this.path}/${id}`);
+    return this.http.get<Password[]>(this.baseUrl, { withCredentials: true });
   }
 
-  updatePassword(id: Number, password: Password): Observable<Password> {
-    return this.http.put<Password>(`${this.path}/${id}`, password);
+  getById(id: number): Observable<Password> {
+    return this.http.get<Password>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 
-  findById(id: Number): Observable<Password> {
-    return this.http.get<Password>(`${this.path}/${id}`);
+  addPassword(password: FormGroup): Observable<Password> {
+    return this.http.post<Password>(this.baseUrl, password, { withCredentials: true });
+  }
+
+  updatePassword(id: number, password: Password): Observable<Password> {
+    return this.http.post<Password>(`${this.baseUrl}/${id}`, password, { withCredentials: true });
+  }
+
+  deletePassword(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 }

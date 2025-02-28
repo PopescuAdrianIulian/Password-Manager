@@ -1,25 +1,21 @@
 package com.password_manager.Service;
 
 import com.password_manager.Entity.Password;
+import com.password_manager.Entity.User;
 import com.password_manager.Repository.PasswordRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-
-
 public class PasswordService {
     private final PasswordRepository passwordRepository;
 
     public PasswordService(PasswordRepository passwordRepository) {
         this.passwordRepository = passwordRepository;
     }
-
 
     @Transactional
     public Password addPassword(Password password) {
@@ -28,6 +24,13 @@ public class PasswordService {
 
     public List<Password> passwordList() {
         return passwordRepository.findAll();
+    }
+
+    public List<Password> passwordListByUser(User user) {
+        return passwordRepository.findAll()
+                .stream()
+                .filter(p -> p.getUser() != null && p.getUser().getId() == user.getId())
+                .collect(Collectors.toList());
     }
 
     public Password findById(long id) {
@@ -47,5 +50,4 @@ public class PasswordService {
     public void deletePassword(Long id) {
         passwordRepository.deleteById(id);
     }
-
 }

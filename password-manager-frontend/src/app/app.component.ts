@@ -12,5 +12,4 @@ import { AddPasswordComponent } from "./add-password/add-password.component";
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'password-manager-frontend';
 }

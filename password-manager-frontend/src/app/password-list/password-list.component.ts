@@ -21,7 +21,6 @@ export class PasswordListComponent {
   constructor(private passwordService: PasswordService) {}
 
   ngOnInit() {
-
     this.passwordService.getAll().subscribe((response) => {
       console.log(response);
       this.passwords = response;

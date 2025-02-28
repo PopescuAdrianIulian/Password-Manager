@@ -1,13 +1,12 @@
-import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { PasswordService } from "../../data/service/password.service";
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Password } from '../../data/model/Password';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { NgIf } from '@angular/common';
 
 @Component({
@@ -17,12 +16,14 @@ import { NgIf } from '@angular/common';
   templateUrl: './add-password.component.html',
   styleUrl: './add-password.component.css',
 })
-export class AddPasswordComponent {
+export class AddPasswordComponent implements OnInit {
   passwordForm!: FormGroup;
+  error: string | null = null;
+
   constructor(
     private fb: FormBuilder,
-    private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private passwordService: PasswordService
   ) {}
 
   ngOnInit() {
@@ -32,15 +33,17 @@ export class AddPasswordComponent {
       password: ['', [Validators.required, Validators.minLength(8)]],
     });
   }
+
   onSubmit() {
-    const p: Password = this.passwordForm.value;
-    this.http.post('http://localhost:8080/password', p).subscribe({
-      next: (response) => {
-        alert('Password added successfully');
-        console.log(response);
-        this.passwordForm.reset();
-        this.router.navigate(['/passwords']);
-      },
-    });
+    if (this.passwordForm.valid) {
+      this.passwordService.addPassword(this.passwordForm.value).subscribe({
+        next: () => {
+          this.router.navigate(['/passwords']);
+        },
+        error: (err) => {
+          this.error = err.error?.error || 'Failed to add password. Please try again.';
+        }
+      });
+    }
   }
 }
